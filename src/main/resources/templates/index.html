@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/bootstrap-5.1.3-dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script th:src="@{/jquery-3.6.0-dist/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/bootstrap-5.1.3-dist/js/bootstrap.min.js}"></script>
+    <title>Documentação da API</title>
+</head>
+<body>
+<div class="container mt-3">
+    <h1 class="text-center">Documentação da API</h1>
+    <h2 class="mt-3 mb-5"><strong>Java Spring Boot + Thymeleaf</strong></h2>
+
+    <!-- Task Controller Routes -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white"><strong>Task Routes</strong></div>
+        <div class="card-body">
+            <!-- Create Task -->
+            <div class="card mb-2">
+                <div class="card-header">Cadastrar Tarefa <span class="badge bg-success">Method POST</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-success">POST Route</span> <a href="#">http://localhost:8080/tasks/{listId}</a></p>
+                    <span class="badge bg-success">JSON</span>
+                    <code>
+                        {
+                        "title": "Reunião de trabalho",
+                        "description": "Discussão sobre o novo projeto",
+                        "dueDate": "29-08-2024",
+                        "status": "PENDING"
+                        }
+                    </code>
+                </div>
+            </div>
+            <!-- Get Tasks by List -->
+            <div class="card mb-2">
+                <div class="card-header">Obter Tarefas por Lista <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/tasks/list/{listId}?page=0</a></p>
+                </div>
+            </div>
+            <!-- Update Task -->
+            <div class="card mb-2">
+                <div class="card-header">Atualizar Tarefa <span class="badge bg-warning">Method PUT</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-warning">PUT Route</span> <a href="#">http://localhost:8080/tasks/{taskId}</a></p>
+                    <span class="badge bg-warning">JSON</span>
+                    <code>
+                        {
+                        "title": "Reunião de equipe",
+                        "description": "Reunião sobre o progresso do projeto",
+                        "dueDate": "30-08-2024",
+                        "status": "PENDING"
+                        }
+                    </code>
+                </div>
+            </div>
+            <!-- Delete Task -->
+            <div class="card mb-2">
+                <div class="card-header">Excluir Tarefa <span class="badge bg-danger">Method DELETE</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-danger">DELETE Route</span> <a href="#">http://localhost:8080/tasks/{taskId}</a></p>
+                </div>
+            </div>
+            <!-- Complete Task -->
+            <div class="card mb-2">
+                <div class="card-header">Concluir Tarefa <span class="badge bg-secondary">Method PATCH</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-secondary">PATCH Route</span> <a href="#">http://localhost:8080/tasks/{taskId}/complete</a></p>
+                </div>
+            </div>
+            <!-- Filter Tasks -->
+            <div class="card mb-2">
+                <div class="card-header">Filtrar Tarefas <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/tasks/filter?completed=true&favorite=false</a></p>
+                </div>
+            </div>
+            <!-- Filter Completed Tasks -->
+            <div class="card mb-2">
+                <div class="card-header">Filtrar Tarefas Concluídas <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/tasks/completed?completed=true</a></p>
+                </div>
+            </div>
+            <!-- Filter Pending Tasks -->
+            <div class="card mb-2">
+                <div class="card-header">Filtrar Tarefas Pendentes <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/tasks/pending?pending=true</a></p>
+                </div>
+            </div>
+            <!-- Filter Favorite Tasks -->
+            <div class="card mb-2">
+                <div class="card-header">Filtrar Tarefas Favoritas <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/tasks/favorite?favorite=true</a></p>
+                </div>
+            </div>
+            <!-- Delete Completed Tasks from List -->
+            <div class="card mb-2">
+                <div class="card-header">Excluir Tarefas Concluídas da Lista <span class="badge bg-danger">Method DELETE</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-danger">DELETE Route</span> <a href="#">http://localhost:8080/tasks/lists/{taskListId}/completed</a></p>
+                </div>
+            </div>
+            <!-- Update Task Status -->
+            <div class="card mb-2">
+                <div class="card-header">Atualizar Status da Tarefa <span class="badge bg-secondary">Method PATCH</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-secondary">PATCH Route</span> <a href="#">http://localhost:8080/tasks/{taskId}/status</a></p>
+                    <span class="badge bg-secondary">JSON</span>
+                    <code>
+                        {
+                        "status": "COMPLETED"
+                        }
+                    </code>
+                </div>
+            </div>
+            <!-- Update Task Favorite -->
+            <div class="card mb-2">
+                <div class="card-header">Favoritar/Desfavoritar Tarefa <span class="badge bg-secondary">Method PATCH</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-secondary">PATCH Route</span> <a href="#">http://localhost:8080/tasks/{taskId}/favorite</a></p>
+                    <span class="badge bg-secondary">JSON</span>
+                    <code>
+                        {
+                        "isFavorite": true
+                        }
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TaskList Controller Routes -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white"><strong>Task List Routes</strong></div>
+        <div class="card-body">
+            <!-- Create Task List -->
+            <div class="card mb-2">
+                <div class="card-header">Cadastrar Lista de Tarefas <span class="badge bg-success">Method POST</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-success">POST Route</span> <a href="#">http://localhost:8080/task-lists</a></p>
+                    <span class="badge bg-success">JSON</span>
+                    <code>
+                        {
+                        "title": "Lista de Projetos"
+                        }
+                    </code>
+                </div>
+            </div>
+            <!-- Get Ordered Task Lists -->
+            <div class="card mb-2">
+                <div class="card-header">Obter Listas de Tarefas Ordenadas <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/task-lists/ordered?page=0&size=5</a></p>
+                </div>
+            </div>
+            <!-- Get Task List by ID -->
+            <div class="card mb-2">
+                <div class="card-header">Obter Lista de Tarefas por ID <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/task-lists/{id}</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SubTask Controller Routes -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white"><strong>SubTask Routes</strong></div>
+        <div class="card-body">
+            <!-- Index SubTasks -->
+            <div class="card mb-2">
+                <div class="card-header">Página Inicial das Subtarefas <span class="badge bg-secondary">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-secondary">GET Route</span> <a href="#">http://localhost:8080/subtasks/</a></p>
+                </div>
+            </div>
+            <!-- Create SubTask -->
+            <div class="card mb-2">
+                <div class="card-header">Criar Subtarefa <span class="badge bg-success">Method POST</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-success">POST Route</span> <a href="#">http://localhost:8080/subtasks</a></p>
+                    <span class="badge bg-success">JSON</span>
+                    <code>
+                        {
+                        "title": "Reunião com cliente",
+                        "description": "Preparar relatório para apresentação",
+                        "dueDate": "28-08-2024",
+                        "status": "PENDING",
+                        "taskId": 1
+                        }
+                    </code>
+                </div>
+            </div>
+            <!-- Get SubTask by ID -->
+            <div class="card mb-2">
+                <div class="card-header">Obter Subtarefa por ID <span class="badge bg-info">Method GET</span></div>
+                <div class="card-body">
+                    <p><span class="badge bg-info">GET Route</span> <a href="#">http://localhost:8080/subtasks/{id}</a></p>
+                    <span class="badge bg-info">JSON</span>
+                    <code>
+                        {
+                        "id": 1,
+                        "title": "Reunião com cliente",
+                        "description": "Preparar relatório para apresentação",
+                        "dueDate": "28-08-2024",
+                        "status": "PENDING",
+                        "taskId": 1
+                        }
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
