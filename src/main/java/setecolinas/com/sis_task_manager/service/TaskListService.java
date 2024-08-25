@@ -10,7 +10,7 @@ import setecolinas.com.sis_task_manager.dto.TaskListRequestDTO;
 import setecolinas.com.sis_task_manager.dto.TaskListResponseDTO;
 import setecolinas.com.sis_task_manager.dto.TaskRequestDTO;
 import setecolinas.com.sis_task_manager.dto.TaskResponseDTO;
-import setecolinas.com.sis_task_manager.model.Status;
+import setecolinas.com.sis_task_manager.model.enums.Status;
 import setecolinas.com.sis_task_manager.model.Task;
 import setecolinas.com.sis_task_manager.model.TaskList;
 import setecolinas.com.sis_task_manager.repository.TaskListRepository;

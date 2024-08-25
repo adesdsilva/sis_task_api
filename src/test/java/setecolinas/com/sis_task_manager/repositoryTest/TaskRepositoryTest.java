@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
-import setecolinas.com.sis_task_manager.model.Status;
+import setecolinas.com.sis_task_manager.model.enums.Status;
 import setecolinas.com.sis_task_manager.model.Task;
 import setecolinas.com.sis_task_manager.repository.TaskRepository;
 

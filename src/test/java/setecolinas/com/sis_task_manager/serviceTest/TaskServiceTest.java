@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import setecolinas.com.sis_task_manager.config.ResourceNotFoundException;
 import setecolinas.com.sis_task_manager.dto.*;
-import setecolinas.com.sis_task_manager.model.Status;
+import setecolinas.com.sis_task_manager.model.enums.Status;
 import setecolinas.com.sis_task_manager.model.Task;
 import setecolinas.com.sis_task_manager.model.TaskList;
 import setecolinas.com.sis_task_manager.repository.TaskListRepository;

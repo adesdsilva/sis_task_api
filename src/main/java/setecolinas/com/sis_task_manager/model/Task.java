@@ -2,6 +2,7 @@ package setecolinas.com.sis_task_manager.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import setecolinas.com.sis_task_manager.model.enums.Status;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -111,7 +112,9 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(id, task.id) && Objects.equals(title, task.title) && Objects.equals(description, task.description) && Objects.equals(dueDate, task.dueDate) && Objects.equals(status, task.status) && Objects.equals(taskList, task.taskList) && Objects.equals(subTasks, task.subTasks);
+        return Objects.equals(id, task.id) && Objects.equals(title, task.title) && Objects.equals(description, task.description)
+                && Objects.equals(dueDate, task.dueDate) && Objects.equals(status, task.status)
+                && Objects.equals(taskList, task.taskList) && Objects.equals(subTasks, task.subTasks);
     }
 
     @Override
@@ -129,6 +132,7 @@ public class Task {
                 ", status=" + status +
                 ", taskList=" + taskList +
                 ", subTasks=" + subTasks +
+                ", isFavorite=" + isFavorite +
                 '}';
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import setecolinas.com.sis_task_manager.model.Status;
+import setecolinas.com.sis_task_manager.model.enums.Status;
 import setecolinas.com.sis_task_manager.model.Task;
 import setecolinas.com.sis_task_manager.model.TaskList;
 
