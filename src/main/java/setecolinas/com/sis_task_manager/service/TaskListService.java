@@ -1,10 +1,10 @@
 package setecolinas.com.sis_task_manager.service;
 
-import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import setecolinas.com.sis_task_manager.config.ResourceNotFoundException;
 import setecolinas.com.sis_task_manager.dto.TaskListRequestDTO;
 import setecolinas.com.sis_task_manager.dto.TaskListResponseDTO;
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class TaskListService {
 
     private final TaskListRepository taskListRepository;
@@ -31,6 +32,7 @@ public class TaskListService {
         this.taskRepository = taskRepository;
     }
 
+    @Transactional
     public TaskListResponseDTO createTaskList(TaskListRequestDTO requestDTO) {
         TaskList taskList = new TaskList();
         taskList.setTitle(requestDTO.title());
@@ -72,8 +74,6 @@ public class TaskListService {
         return responseDTO;
     }
 
-
-
     private TaskResponseDTO convertToDTO(Task task) {
         return new TaskResponseDTO(
                 task.getId(),
@@ -105,6 +105,7 @@ public class TaskListService {
         );
     }
 
+    @Transactional
     public Page<TaskListResponseDTO> getTaskListsOrderedByFavoritesAndCreation(Pageable pageable) {
         return taskListRepository.findAllByOrderByIsFavoriteDescCreatedDateAsc(pageable)
                 .map(this::convertToTaskListResponseDTO);

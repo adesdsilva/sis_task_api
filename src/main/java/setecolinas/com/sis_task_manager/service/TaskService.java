@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import setecolinas.com.sis_task_manager.config.ResourceNotFoundException;
 import setecolinas.com.sis_task_manager.dto.TaskRequestDTO;
 import setecolinas.com.sis_task_manager.dto.TaskRequestUpdateDTO;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
+@Transactional(readOnly = true)
 public class TaskService {
 
     private final TaskRepository taskRepository;
@@ -32,6 +34,7 @@ public class TaskService {
         this.taskListRepository = taskListRepository;
     }
 
+    @Transactional
     public TaskResponseDTO createTask(Long taskListId, TaskRequestDTO requestDTO) {
         // Consulta a lista de tarefas pelo ID
         Optional<TaskList> optionalTaskList = taskListRepository.findById(taskListId);
@@ -62,6 +65,7 @@ public class TaskService {
         return convertToDTO(task);
     }
 
+    @Transactional
     public TaskResponseDTO updateTask(Long taskId, TaskRequestUpdateDTO requestDTO) {
         // Consulta a tarefa pelo ID
         Optional<Task> optionalTask = taskRepository.findById(taskId);
@@ -117,6 +121,7 @@ public class TaskService {
         }
     }
 
+    @Transactional
     public void deleteTask(Long taskId) {
         if(!taskRepository.existsById(taskId)) {
             throw new ResourceNotFoundException("A Id informada: " + taskId + ", não corresponde a nehuma Task!");
@@ -124,6 +129,7 @@ public class TaskService {
         taskRepository.deleteById(taskId);
     }
 
+    @Transactional
     public TaskResponseDTO completeTask(Long taskId) {
         // Consulta a tarefa pelo ID
         Optional<Task> optionalTask = taskRepository.findById(taskId);
@@ -146,6 +152,7 @@ public class TaskService {
         return convertToDTO(task);
     }
 
+    @Transactional
     public Page<TaskResponseDTO> getTasksByList(Long taskListId, int page) {
         // Consulta a lista de tarefas pelo ID
         Optional<TaskList> optionalTaskList = taskListRepository.findById(taskListId);
@@ -167,6 +174,7 @@ public class TaskService {
     }
 
     // Filtros aplicados
+    @Transactional
     public Page<TaskResponseDTO> getTasks(boolean completed, boolean favorite, Pageable pageable) {
         Status status = completed ? Status.COMPLETED : Status.PENDING;
         Page<Task> tasksPage = taskRepository.findByStatusAndTaskListIsFavorite(status, favorite, pageable);
@@ -174,6 +182,7 @@ public class TaskService {
     }
 
     // Filtro apenas por tarefas concluídas
+    @Transactional
     public Page<TaskResponseDTO> getTasksByPending(boolean pending, Pageable pageable) {
         Status status = pending ? Status.COMPLETED : Status.PENDING;
         Page<Task> tasksPage = taskRepository.findByStatus(status, pageable);
@@ -181,6 +190,7 @@ public class TaskService {
     }
 
     // Filtro apenas por tarefas concluídas
+    @Transactional
     public Page<TaskResponseDTO> getTasksByCompletion(boolean completed, Pageable pageable) {
         Status status = completed ? Status.PENDING : Status.COMPLETED;
         Page<Task> tasksPage = taskRepository.findByStatus(status, pageable);
@@ -188,12 +198,14 @@ public class TaskService {
     }
 
     // Filtro apenas por favoritas
+    @Transactional
     public Page<TaskResponseDTO> getTasksByFavorite(boolean favorite, Pageable pageable) {
         Page<Task> tasksPage = taskRepository.findByIsFavorite(favorite, pageable);
         return tasksPage.map(this::convertToDTO);
     }
 
     // Método para excluir tarefas concluídas de uma lista
+    @Transactional
     public void deleteCompletedTasksFromList(Long taskListId) {
         List<Task> completedTasks = taskRepository.findByTaskListAndStatus(
                 taskListRepository.findById(taskListId).orElseThrow(() -> new ResourceNotFoundException("TaskList não encontrado")),
@@ -206,6 +218,7 @@ public class TaskService {
         taskRepository.deleteAll(completedTasks);
     }
 
+    @Transactional
     public TaskResponseDTO updateTaskStatus(Long taskId, Status newStatus) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task não encontrada com id: " + taskId));
@@ -218,6 +231,7 @@ public class TaskService {
         return new TaskResponseDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDueDate(), task.getStatus().name(), task.getTaskList().getId());
     }
 
+    @Transactional
     public TaskResponseDTO updateTaskFavoriteStatus(Long taskId, boolean isFavorite) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task não encontrada com id: " + taskId));
