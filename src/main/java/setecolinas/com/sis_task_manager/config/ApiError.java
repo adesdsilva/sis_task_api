@@ -18,6 +18,11 @@ public class ApiError {
         this.path = path;
     }
 
+    public ApiError(int value, String message) {
+        this.status = value;
+        this.message = message;
+    }
+
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

@@ -33,7 +33,27 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 //            our public endpoints
                         .requestMatchers(HttpMethod.POST, "/authenticate/login").permitAll()
-
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/tasks/{listId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tasks/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tasks/list/{listId}").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/tasks/{taskId}").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/tasks/{taskId}").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/tasks/{taskId}/complete").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tasks/filter").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tasks/completed").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tasks/pending").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tasks/favorite").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/tasks/lists/{taskListId}/completed").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/tasks/{taskId}/status").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/tasks/{taskId}/favorite").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/task-lists/ordered").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/task-lists").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/task-lists/").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/task-lists").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/subtasks/").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/subtasks").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/subtasks/{id}").permitAll()
 //            our private endpoints
                         .anyRequest().authenticated())
                 .authenticationManager(authenticationManager)
