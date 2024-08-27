@@ -22,7 +22,11 @@ public class AuthenticationController {
     private final UserService userService;
     private final LoginAttemptService loginAttemptService;
 
-    public AuthenticationController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, MyUserDetailsService userDetailsService, UserService userService, LoginAttemptService loginAttemptService) {
+    public AuthenticationController(AuthenticationManager authenticationManager,
+                                    JwtUtil jwtUtil,
+                                    MyUserDetailsService userDetailsService,
+                                    UserService userService,
+                                    LoginAttemptService loginAttemptService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
@@ -33,7 +37,8 @@ public class AuthenticationController {
     @PostMapping(value = "/login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.email(), request.password()));
         } catch (BadCredentialsException e) {
             loginAttemptService.addLoginAttempt(request.email(), false);
             throw e;

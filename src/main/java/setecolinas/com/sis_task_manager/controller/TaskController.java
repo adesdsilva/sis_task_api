@@ -22,6 +22,7 @@ public class TaskController {
         return "index";
     }
 
+    // Endpoint para criar uma task
     @PostMapping("/{listId}")
     public ResponseEntity<TaskResponseDTO> createTask(
             @PathVariable Long listId,
@@ -31,6 +32,7 @@ public class TaskController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    // Endpoint para listar as tasks, de acordo com a lista de tarefas
     @GetMapping("/list/{listId}")
     public ResponseEntity<CustomPageResponse<TaskResponseDTO>> getTasksByList(
             @PathVariable Long listId,
@@ -48,6 +50,7 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
+    // Endpoint para editar task
     @PutMapping("/{taskId}")
     public ResponseEntity<TaskResponseDTO> updateTask(
             @PathVariable Long taskId,
@@ -57,12 +60,14 @@ public class TaskController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    // Endpoint para deletar task
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
 
+    // Endpoint para alterar o status da task para COMPLETED
     @PatchMapping("/{taskId}/complete")
     public ResponseEntity<TaskResponseDTO> completeTask(@PathVariable Long taskId) {
         TaskResponseDTO responseDTO = taskService.completeTask(taskId);
@@ -168,7 +173,8 @@ public class TaskController {
     public ResponseEntity<TaskResponseDTO> updateTaskFavorite(
             @PathVariable Long taskId,
             @RequestBody FavoriteUpdateRequest favoriteUpdateRequest) {
-        TaskResponseDTO updatedTask = taskService.updateTaskFavoriteStatus(taskId, favoriteUpdateRequest.isFavorite());
+        TaskResponseDTO updatedTask =
+                taskService.updateTaskFavoriteStatus(taskId, favoriteUpdateRequest.isFavorite());
         return ResponseEntity.ok(updatedTask);
     }
 }
