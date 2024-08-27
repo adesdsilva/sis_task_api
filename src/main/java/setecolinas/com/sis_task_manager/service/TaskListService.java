@@ -1,5 +1,6 @@
 package setecolinas.com.sis_task_manager.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class TaskListService {
@@ -34,20 +36,21 @@ public class TaskListService {
 
     @Transactional
     public TaskListResponseDTO createTaskList(TaskListRequestDTO requestDTO) {
+        log.info("Creating a new TaskList with title: {}", requestDTO.title());
         TaskList taskList = new TaskList();
         taskList.setTitle(requestDTO.title());
-        taskList.setCreatedDate(new Date()); // Defina a data de criação se necessário
-        taskList.setFavorite(false); // Defina um valor padrão para isFavorite
+        taskList.setCreatedDate(new Date());
+        taskList.setFavorite(false);
 
-        // Salva a lista de tarefas
         taskList = taskListRepository.save(taskList);
 
-        // Verifique se a lista foi salva corretamente
         if (taskList == null || taskList.getId() == null) {
+            log.error("Failed to save TaskList");
             throw new ResourceNotFoundException("A TaskList não pôde ser salva corretamente.");
         }
 
-        // Crie e associe as tarefas à nova lista de tarefas
+        log.info("TaskList saved with ID: {}", taskList.getId());
+
         if (requestDTO.tasks() != null) {
             for (TaskRequestDTO taskDTO : requestDTO.tasks()) {
                 Task task = new Task();
@@ -58,10 +61,10 @@ public class TaskListService {
                 task.setTaskList(taskList);
 
                 taskRepository.save(task);
+                log.info("Task with title '{}' added to TaskList ID: {}", taskDTO.title(), taskList.getId());
             }
         }
 
-        // Crie o DTO de resposta
         TaskListResponseDTO responseDTO = new TaskListResponseDTO(
                 taskList.getId(),
                 taskList.getTitle(),
@@ -71,10 +74,12 @@ public class TaskListService {
                 taskList.isFavorite()
         );
 
+        log.info("TaskListResponseDTO created for TaskList ID: {}", taskList.getId());
         return responseDTO;
     }
 
     private TaskResponseDTO convertToDTO(Task task) {
+        log.debug("Converting Task to DTO for Task ID: {}", task.getId());
         return new TaskResponseDTO(
                 task.getId(),
                 task.getTitle(),
@@ -86,6 +91,7 @@ public class TaskListService {
     }
 
     private TaskListResponseDTO convertToTaskListResponseDTO(TaskList taskList) {
+        log.debug("Converting TaskList to TaskListResponseDTO for TaskList ID: {}", taskList.getId());
         List<TaskResponseDTO> tasks = taskList.getTasks().stream()
                 .map(task -> new TaskResponseDTO(
                         task.getId(),
@@ -107,16 +113,17 @@ public class TaskListService {
 
     @Transactional
     public Page<TaskListResponseDTO> getTaskListsOrderedByFavoritesAndCreation(Pageable pageable) {
+        log.info("Retrieving TaskLists ordered by favorites and creation date.");
         return taskListRepository.findAllByOrderByIsFavoriteDescCreatedDateAsc(pageable)
                 .map(this::convertToTaskListResponseDTO);
     }
 
     @Transactional
     public Page<TaskListResponseDTO> getAllTaskLists(Pageable pageable) {
+        log.info("Retrieving all TaskLists with pagination.");
         Page<TaskList> taskLists = taskListRepository.findAll(pageable);
         taskLists.forEach(taskList -> Hibernate.initialize(taskList.getTasks()));
         return taskLists.map(this::convertToTaskListResponseDTO);
     }
-
 }
 
