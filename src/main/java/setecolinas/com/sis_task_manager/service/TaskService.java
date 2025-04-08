@@ -10,17 +10,20 @@ import setecolinas.com.sis_task_manager.config.ResourceNotFoundException;
 import setecolinas.com.sis_task_manager.dto.TaskRequestDTO;
 import setecolinas.com.sis_task_manager.dto.TaskRequestUpdateDTO;
 import setecolinas.com.sis_task_manager.dto.TaskResponseDTO;
+import setecolinas.com.sis_task_manager.dto.UserResponseDTO;
+import setecolinas.com.sis_task_manager.model.User;
 import setecolinas.com.sis_task_manager.model.enums.Status;
 import setecolinas.com.sis_task_manager.model.Task;
 import setecolinas.com.sis_task_manager.model.TaskList;
 import setecolinas.com.sis_task_manager.repository.TaskListRepository;
 import setecolinas.com.sis_task_manager.repository.TaskRepository;
+import setecolinas.com.sis_task_manager.repository.UserRepository;
+import setecolinas.com.sis_task_manager.security.JwtUtil;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,20 +32,26 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskListRepository taskListRepository;
-    private static final Logger logger = Logger.getLogger(TaskService.class.getName());
+    private final UserRepository userRepository;
+    private final JwtUtil tokenService;
 
-    public TaskService(TaskRepository taskRepository, TaskListRepository taskListRepository) {
+    public TaskService(TaskRepository taskRepository, TaskListRepository taskListRepository,
+                       UserRepository userRepository, JwtUtil tokenService) {
         this.taskRepository = taskRepository;
         this.taskListRepository = taskListRepository;
+        this.userRepository = userRepository;
+        this.tokenService = tokenService;
     }
 
     @Transactional
     public TaskResponseDTO createTask(Long taskListId, TaskRequestDTO requestDTO) {
         log.info("Inicializando 'createTask'... {} | Task List Id: {}", requestDTO.toString(), taskListId);
         Optional<TaskList> optionalTaskList = taskListRepository.findById(taskListId);
-        if (optionalTaskList.isEmpty() || Objects.isNull(optionalTaskList.get())) {
+        if (optionalTaskList.isEmpty()) {
             log.info("Task List não encontrada com o Id: {}", taskListId);
             throw new ResourceNotFoundException("Lista de tarefas não encontrada");
+        } else {
+            optionalTaskList.get();
         }
         TaskList taskList = optionalTaskList.get();
         verifyTitle(requestDTO);
@@ -61,9 +70,11 @@ public class TaskService {
     public TaskResponseDTO updateTask(Long taskId, TaskRequestUpdateDTO requestDTO) {
         log.info("Inicializando 'updateTask'... {} | Task Id: {}", requestDTO.toString(), taskId);
         Optional<Task> optionalTask = taskRepository.findById(taskId);
-        if (optionalTask.isEmpty() || Objects.isNull(optionalTask.get())) {
+        if (optionalTask.isEmpty()) {
             log.info("Tarefa não encontrada com o Id: {}", taskId);
             throw new ResourceNotFoundException("Tarefa não encontrada");
+        } else {
+            optionalTask.get();
         }
         Task task = optionalTask.get();
         verifyTitleUpdateDTO(requestDTO);
@@ -90,7 +101,7 @@ public class TaskService {
     public TaskResponseDTO completeTask(Long taskId) {
         log.info("Inicializando 'completeTask'... Task Id: {}", taskId);
         Optional<Task> optionalTask = taskRepository.findById(taskId);
-        if (optionalTask.isEmpty() || Objects.isNull(optionalTask)) {
+        if (optionalTask.isEmpty()) {
             log.info("Tarefa não encontrada com o Id: {}", taskId);
             throw new ResourceNotFoundException("Tarefa não encontrada");
         }
@@ -105,7 +116,7 @@ public class TaskService {
     public Page<TaskResponseDTO> getTasksByList(Long taskListId, int page) {
         log.info("Inicializando 'getTasksByList'... Task List Id: {} | Page: {}", taskListId, page);
         Optional<TaskList> optionalTaskList = taskListRepository.findById(taskListId);
-        if (optionalTaskList.isEmpty() || Objects.isNull(optionalTaskList)) {
+        if (optionalTaskList.isEmpty()) {
             log.info("Task List não encontrada com o Id: {}", taskListId);
             throw new ResourceNotFoundException("Lista de tarefas não encontrada");
         }
@@ -188,7 +199,7 @@ public class TaskService {
         return convertToDTO(updatedTask);
     }
 
-    private TaskResponseDTO convertToDTO(Task task) {
+    public TaskResponseDTO convertToDTO(Task task) {
         return new TaskResponseDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDueDate(), task.getStatus().name(), task.getTaskList().getId());
     }
 
@@ -211,6 +222,62 @@ public class TaskService {
             throw new ResourceNotFoundException("A descrição não pode ser vazia.");
         }
     }
+
+    @Transactional
+    public TaskResponseDTO assignTaskToUser(Long taskId, Long userId) {
+        log.info("Assigning task ID {} to user ID {}", taskId, userId);
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + taskId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        task.setAssignedUser(user);
+        taskRepository.save(task);
+        log.info("Task ID {} assigned to user ID {} successfully", taskId, userId);
+
+        return convertToDTO(task);
+    }
+
+    public UserResponseDTO getAssignedUser(Long taskId) {
+        log.info("Fetching assigned user for task ID {}", taskId);
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + taskId));
+        User assignedUser = task.getAssignedUser();
+
+        return assignedUser != null ? convertToDTO(assignedUser) : null;
+    }
+
+    public boolean isDueSoon(Task task) {
+        log.info("Checking if task ID {} is due soon", task.getId());
+        LocalDate dueDate = task.getDueDate();
+        return dueDate != null && dueDate.minusDays(1).isBefore(LocalDate.now());
+    }
+
+    public List<TaskResponseDTO> getAllTasksDueSoon() {
+        log.info("Fetching all tasks that are due soon");
+        List<Task> tasks = taskRepository.findAll().stream()
+                .filter(this::isDueSoon)
+                .collect(Collectors.toList());
+
+        return tasks.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public TaskResponseDTO findById(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + taskId));
+        return convertToDTO(task);
+    }
+
+    public Task findTaskById(Long taskId) {
+        return this.taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + taskId));
+    }
+
+    private UserResponseDTO convertToDTO(User user) {
+        final var token = this.tokenService.generateToken(user.getEmail());
+        return new UserResponseDTO(user.getName(), user.getEmail(), token);
+    }
+
 }
 
 

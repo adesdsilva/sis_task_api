@@ -2,10 +2,7 @@ package setecolinas.com.sis_task_manager.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 public class TaskList {
@@ -19,8 +16,12 @@ public class TaskList {
 //    @OneToMany(mappedBy = "taskList", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Task> tasks = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "taskList")
-    private List<Task> tasks = new ArrayList<>();
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "taskList")
+//    private List<Task> tasks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taskList", cascade = CascadeType.ALL)
+    private Set<Task> tasks = new HashSet<>();
+
 
     @Column(name = "is_favorite")
     private boolean isFavorite = false;
@@ -45,11 +46,20 @@ public class TaskList {
         this.title = title;
     }
 
-    public List<Task> getTasks() {
+//    public List<Task> getTasks() {
+//        return tasks;
+//    }
+//
+//    public void setTasks(List<Task> tasks) {
+//        this.tasks = tasks;
+//    }
+
+
+    public Set<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
     }
 

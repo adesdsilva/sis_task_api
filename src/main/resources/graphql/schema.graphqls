@@ -1,0 +1,64 @@
+type Query {
+    task(id: ID!): Task
+    tasks: [Task]
+}
+
+#type Mutation {
+#    createTask(input: TaskInput!): Task
+#    updateTask(id: ID!, input: TaskInput!): Task
+#    deleteTask(id: ID!): Boolean
+#}
+
+type Mutation {
+    deleteTask(id: ID!): Boolean
+}
+
+
+type Task {
+    id: ID!
+    title: String!
+    description: String!
+    dueDate: String!
+    status: Status!
+    taskList: TaskList
+    subTasks: [SubTask]
+    isFavorite: Boolean
+    assignedUser: User
+}
+
+type TaskList {
+    id: ID!
+    title: String!
+    tasks: [Task]
+    isFavorite: Boolean
+}
+
+type SubTask {
+    id: ID!
+    title: String!
+    description: String!
+    status: Status!
+    task: Task
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+enum Status {
+    PENDING
+    IN_PROGRESS
+    COMPLETED
+}
+
+input TaskInput {
+    title: String!
+    description: String!
+    dueDate: String!
+    status: Status!
+    taskListId: ID
+    isFavorite: Boolean
+    assignedUserId: ID
+}

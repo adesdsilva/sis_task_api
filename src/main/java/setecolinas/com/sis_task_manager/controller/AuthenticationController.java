@@ -14,6 +14,7 @@ import setecolinas.com.sis_task_manager.security.JwtUtil;
 import setecolinas.com.sis_task_manager.security.MyUserDetailsService;
 import setecolinas.com.sis_task_manager.service.LoginAttemptService;
 import setecolinas.com.sis_task_manager.service.UserService;
+import setecolinas.com.sis_task_manager.subscription.EndpointSecurity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,7 @@ public class AuthenticationController {
         this.loginAttemptService = loginAttemptService;
     }
 
+    @EndpointSecurity(rule = "permitAll")
     @PostMapping(value = "/login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
         String email = request.email();

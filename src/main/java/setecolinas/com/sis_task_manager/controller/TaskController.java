@@ -81,8 +81,8 @@ public class TaskController {
             @RequestParam(value = "favorite", required = false) Boolean favorite,
             Pageable pageable) {
         Page<TaskResponseDTO> tasks = taskService.getTasks(
-                completed != null ? completed : false,
-                favorite != null ? favorite : false,
+                completed != null && completed,
+                favorite != null && favorite,
                 pageable);
         CustomPageResponse<TaskResponseDTO> response = new CustomPageResponse<>(
                 tasks.getContent(),
@@ -101,7 +101,7 @@ public class TaskController {
             @RequestParam(value = "completed", required = false) Boolean completed,
             Pageable pageable) {
         Page<TaskResponseDTO> tasks = taskService.getTasksByCompletion(
-                completed != null ? completed : false,
+                completed != null && completed,
                 pageable);
 
         CustomPageResponse<TaskResponseDTO> response = new CustomPageResponse<>(
@@ -120,7 +120,7 @@ public class TaskController {
             @RequestParam(value = "pending", required = false) Boolean pending,
             Pageable pageable) {
         Page<TaskResponseDTO> tasks = taskService.getTasksByPending(
-                pending != null ? pending : false,
+                pending != null && pending,
                 pageable);
 
         CustomPageResponse<TaskResponseDTO> response = new CustomPageResponse<>(

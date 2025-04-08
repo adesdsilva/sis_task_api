@@ -8,6 +8,7 @@ import setecolinas.com.sis_task_manager.dto.UserRequestDTO;
 import setecolinas.com.sis_task_manager.model.enums.Role;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +30,15 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PasswordResetToken> passwordResetTokens;
+
+    @OneToMany(mappedBy = "user")
+    private Set<NotificationSetting> notificationSettings;
+
+    @OneToMany(mappedBy = "assignedUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> assignedTasks;
 
     public User() {}
 
@@ -73,6 +83,30 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public List<PasswordResetToken> getPasswordResetTokens() {
+        return passwordResetTokens;
+    }
+
+    public void setPasswordResetTokens(List<PasswordResetToken> passwordResetTokens) {
+        this.passwordResetTokens = passwordResetTokens;
+    }
+
+    public Set<NotificationSetting> getNotificationSettings() {
+        return notificationSettings;
+    }
+
+    public void setNotificationSettings(Set<NotificationSetting> notificationSettings) {
+        this.notificationSettings = notificationSettings;
+    }
+
+    public List<Task> getAssignedTasks() {
+        return assignedTasks;
+    }
+
+    public void setAssignedTasks(List<Task> assignedTasks) {
+        this.assignedTasks = assignedTasks;
     }
 
     @Override

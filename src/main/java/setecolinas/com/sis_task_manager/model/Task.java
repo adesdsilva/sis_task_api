@@ -28,7 +28,7 @@ public class Task {
     @Column(nullable = false)
     private Status status;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "task_list_id")
     private TaskList taskList;
 
@@ -38,6 +38,10 @@ public class Task {
 
     @Column(name = "is_favorite")
     private Boolean isFavorite = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_user_id")
+    private User assignedUser;
 
     public Long getId() {
         return id;
@@ -105,6 +109,18 @@ public class Task {
 
     public void setFavorite(Boolean isFavorite) {
         this.isFavorite = isFavorite;
+    }
+
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public User getAssignedUser() {
+        return assignedUser;
+    }
+
+    public void setAssignedUser(User assignedUser) {
+        this.assignedUser = assignedUser;
     }
 
     @Override

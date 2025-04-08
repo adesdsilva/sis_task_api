@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import setecolinas.com.sis_task_manager.dto.UserRequestDTO;
 import setecolinas.com.sis_task_manager.dto.UserResponseDTO;
 import setecolinas.com.sis_task_manager.service.UserService;
+import setecolinas.com.sis_task_manager.subscription.EndpointSecurity;
 
 @RestController
 @RequestMapping("/users")
@@ -16,6 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @EndpointSecurity(rule = "permitAll")
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
         UserResponseDTO userResponseDTO = userService.createUser(userRequestDTO);

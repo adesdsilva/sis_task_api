@@ -4,9 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import setecolinas.com.sis_task_manager.config.ResourceNotFoundException;
 import setecolinas.com.sis_task_manager.dto.UserRequestDTO;
 import setecolinas.com.sis_task_manager.dto.UserResponseDTO;
+import setecolinas.com.sis_task_manager.model.Task;
 import setecolinas.com.sis_task_manager.model.User;
+import setecolinas.com.sis_task_manager.repository.TaskRepository;
 import setecolinas.com.sis_task_manager.repository.UserRepository;
 import setecolinas.com.sis_task_manager.security.JwtUtil;
 
@@ -18,11 +21,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil tokenService;
+    private final TaskRepository taskRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil tokenService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       JwtUtil tokenService, TaskRepository taskRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
+        this.taskRepository = taskRepository;
     }
 
     @Transactional
@@ -34,7 +40,7 @@ public class UserService {
         User user = new User(userRequestDTO);
         user.setPassword(passwordEncoder.encode(userRequestDTO.password()));
         User createdUser = userRepository.save(user);
-        String token = tokenService.generateToken(createdUser.getPassword());
+        String token = getToken(createdUser);
 
         log.info("User created with ID: {}", createdUser.getId());
         return new UserResponseDTO(
@@ -42,6 +48,11 @@ public class UserService {
                 createdUser.getEmail(),
                 token
         );
+    }
+
+    public String getToken(User createdUser) {
+        String token = tokenService.generateToken(createdUser.getEmail());
+        return token;
     }
 
     private void checkIfEmailExists(String email) {
@@ -77,5 +88,25 @@ public class UserService {
 
     private boolean isValidPassword(String password) {
         return password.length() >= 6 && password.matches(".*[a-zA-Z].*") && password.matches(".*\\d.*");
+    }
+
+    @Transactional
+    public UserResponseDTO findAssignedUserForTask(Long taskId) {
+        log.info("Finding assigned user for task ID {}", taskId);
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with ID: " + taskId));
+
+        User assignedUser = task.getAssignedUser();
+
+        if (assignedUser != null) {
+            log.info("Assigned user found for task ID {}: user ID {}", taskId, assignedUser.getId());
+            return new UserResponseDTO(assignedUser.getName(),
+                    assignedUser.getEmail(),
+                    getToken(assignedUser));
+        } else {
+            log.warn("No user assigned to task ID {}", taskId);
+            return null;
+        }
     }
 }
